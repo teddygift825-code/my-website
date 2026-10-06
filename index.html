@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freedom Journey — Streaming Channels</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <form id="search-form" role="search">
+    <input id="search-input" type="search" placeholder="Search videos &amp; channels..." autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+  <button id="report-button" class="report-trigger" type="button"><span aria-hidden="true">!</span> Report</button>
+  <button id="community-button" class="topbar-action" type="button">Community</button>
+  <button id="profile-button" class="profile-button" type="button" aria-label="Open profile settings">
+    <span class="profile-avatar-fallback">U</span>
+  </button>
+  <button id="logout-button" class="logout-button" type="button">Log out</button>
+</header>
+
+<main id="app">
+  <!-- HOME -->
+  <section id="view-home" class="view">
+    <div class="hero" id="hero" hidden></div>
+    <div class="chips" id="channel-chips" aria-label="Channels"></div>
+    <div id="home-sections"></div>
+    <section id="home-recommendations" class="section" hidden>
+      <div class="section-head">
+        <h2>More to explore</h2>
+        <span id="home-recommendation-sub" class="section-sub"></span>
+      </div>
+      <div id="home-recommendation-results" class="grid"></div>
+        <button id="home-recommendation-more" class="search-more" type="button" hidden>Load more videos</button>
+    </section>
+  </section>
+
+  <!-- CHANNEL -->
+  <section id="view-channel" class="view" hidden></section>
+
+  <!-- SEARCH RESULTS -->
+  <section id="view-search" class="view" hidden>
+    <div class="section-head"><h2 id="search-heading">Search results</h2><span class="section-sub" id="search-sub"></span></div>
+    <div id="search-results" class="grid"></div>
+      <button id="search-more" class="search-more" type="button" hidden>Load more results</button>
+  </section>
+
+  <!-- WATCH (same-tab player) -->
+  <section id="view-watch" class="view" hidden>
+    <div class="watch-layout">
+      <div class="watch-main">
+        <div class="player-shell">
+          <div id="yt-player"></div>
+          <div id="player-error" class="player-error" hidden>
+            <p id="player-error-text"></p>
+            <button id="copy-link-btn" class="btn" type="button">Copy video link</button>
+          </div>
+        </div>
+        <div class="watch-meta">
+          <h1 id="watch-title">…</h1>
+          <p id="watch-channel"></p>
+        </div>
+        <section class="video-comments" aria-labelledby="comments-heading">
+          <div class="section-head"><h2 id="comments-heading">Comments</h2><span id="comments-status" class="section-sub"></span></div>
+          <div id="video-comments-list" class="community-list"></div>
+          <form id="video-comment-form" class="community-form">
+            <textarea id="video-comment-input" maxlength="1000" placeholder="Add a comment" required></textarea>
+            <button type="submit">Comment</button>
+          </form>
+        </section>
+        <section class="watch-recommendations" aria-labelledby="watch-recommendations-heading">
+          <div class="section-head">
+            <h2 id="watch-recommendations-heading">More like this</h2>
+            <span id="watch-recommendations-status" class="section-sub">Related videos appear here.</span>
+          </div>
+          <div id="watch-recommendation-results" class="grid"></div>
+          <button id="watch-recommendation-more" class="search-more" type="button" hidden>Load more videos</button>
+        </section>
+      </div>
+      <aside class="queue-pane">
+        <div class="queue-head">
+          <h2>Up next</h2>
+          <label class="autoplay"><input type="checkbox" id="autoplay-toggle" checked> Autoplay</label>
+        </div>
+        <div id="queue-list" class="queue-list"></div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="empty-state" class="empty-state" hidden>Nothing found. Try a different search.</div>
+</main>
+
+<dialog id="profile-dialog" class="feature-dialog">
+  <div class="dialog-head">
+    <h2>Profile &amp; settings</h2>
+    <button class="dialog-close" type="button" data-close-dialog="profile-dialog" aria-label="Close">×</button>
+  </div>
+  <div class="profile-editor">
+    <label class="avatar-upload" for="profile-avatar-input">
+      <img id="profile-avatar-preview" alt="Profile picture" hidden>
+      <span id="profile-avatar-fallback" class="profile-avatar-fallback large">U</span>
+      <span>Change photo</span>
+    </label>
+    <input id="profile-avatar-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+    <form id="profile-form" class="community-form profile-form">
+      <label>Display name<input id="profile-display-name" maxlength="40" required></label>
+      <label>About you<textarea id="profile-bio" maxlength="200" placeholder="A short profile bio"></textarea></label>
+      <button type="submit">Save profile</button>
+    </form>
+  </div>
+  <p id="profile-status" class="community-status" role="status"></p>
+  <section class="profile-warnings">
+    <h3>Account notices</h3>
+    <div id="profile-warnings-list" class="community-list"></div>
+  </section>
+  <section class="profile-history">
+    <div class="history-heading"><h3>Watch history</h3><button type="button" data-clear-history="watch">Clear</button></div>
+    <div id="watch-history-list" class="history-list"></div>
+    <div class="history-heading"><h3>Search history</h3><button type="button" data-clear-history="search">Clear</button></div>
+    <div id="search-history-list" class="history-list"></div>
+    <button class="text-action" type="button" data-clear-history="all">Clear all history</button>
+  </section>
+</dialog>
+
+<dialog id="community-dialog" class="feature-dialog community-dialog">
+  <div class="dialog-head">
+    <h2>Community</h2>
+    <button class="dialog-close" type="button" data-close-dialog="community-dialog" aria-label="Close">×</button>
+  </div>
+  <div class="community-tabs" role="tablist">
+    <button type="button" class="active" data-community-tab="chat">Live chat</button>
+    <button type="button" data-community-tab="memes">Memes</button>
+  </div>
+  <section id="community-chat-tab" class="community-tab">
+    <div id="community-chat-list" class="community-list chat-list" aria-live="polite"></div>
+    <form id="community-chat-form" class="community-form">
+      <textarea id="community-chat-input" maxlength="500" placeholder="Write a message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </section>
+  <section id="community-memes-tab" class="community-tab" hidden>
+    <form id="meme-upload-form" class="community-form meme-upload-form">
+      <label>Meme image<input id="meme-image-input" name="image" type="file" accept="image/png,image/jpeg,image/gif,image/webp" required></label>
+      <textarea id="meme-caption-input" name="caption" maxlength="300" placeholder="Add a caption"></textarea>
+      <button type="submit">Post meme</button>
+    </form>
+    <div id="community-meme-list" class="meme-list"></div>
+  </section>
+  <p id="community-status" class="community-status" role="status"></p>
+</dialog>
+
+<dialog id="report-dialog" class="feature-dialog report-dialog">
+  <div class="dialog-head">
+    <h2>Report a problem</h2>
+    <button class="dialog-close" type="button" data-close-dialog="report-dialog" aria-label="Close">×</button>
+  </div>
+  <form id="report-form" class="community-form report-form">
+    <label>Report type
+      <select id="report-type" required>
+        <option value="Playback issue">Playback issue</option>
+        <option value="Account or profile">Account or profile</option>
+        <option value="Community content">Community content</option>
+        <option value="Safety concern">Safety concern</option>
+        <option value="Other">Other</option>
+      </select>
+    </label>
+    <label>What happened?
+      <textarea id="report-details" maxlength="2000" placeholder="Describe the problem" required></textarea>
+    </label>
+    <p class="report-recipient">Report email: <a href="mailto:teddygift825@gmail.com">teddygift825@gmail.com</a></p>
+    <button class="report-send" type="submit">Continue to email</button>
+    <p id="report-status" class="community-status" role="status"></p>
+  </form>
+</dialog>
+
+<!-- Now-playing bar: keeps playback controls reachable without leaving this tab -->
+<div id="now-playing" class="now-playing" hidden>
+  <span class="np-live" id="np-live" hidden>&#9679; LIVE</span>
+  <span id="np-title">Nothing playing</span>
+  <span class="np-spacer"></span>
+  <button id="np-toggle" type="button" title="Play / Pause">&#10074;&#10074;</button>
+  <button id="np-return" type="button" title="Back to the player">Open player</button>
+  <button id="np-stop" type="button" title="Stop playback">&#9632;</button>
+</div>
+
+<script src="/js/player-engine.js"></script>
+<script src="/js/community.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

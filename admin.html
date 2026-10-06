@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freedom Journey | Administration</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #141710;
+      --panel: #20231b;
+      --panel-alt: #2a2d23;
+      --text: #eee8d5;
+      --muted: #b5ad98;
+      --accent: #e1b63b;
+      --accent-dark: #bd761d;
+      --copper: #e27632;
+      --good: #a8c879;
+      --warn: #efb83e;
+      --danger: #df5547;
+      --border: #484537;
+      --shadow: 0 12px 30px rgba(0, 0, 0, .28);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 86% 0%, #292d1e 0, transparent 34%), var(--bg); background-attachment: fixed;
+      color: var(--text); font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    .wrap {
+      max-width: 1320px; margin: 0 auto; padding: 28px clamp(16px, 3vw, 40px) 48px;
+    }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.1rem 1.35rem;
+      color: var(--text); background: linear-gradient(110deg, #1b2118, #4b2c17); border: 1px solid #78502b; border-radius: 12px; margin-bottom: 1.2rem;
+      box-shadow: var(--shadow);
+    }
+    .brand-lockup { display: flex; align-items: center; gap: 13px; }
+    .brand-mark { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid rgba(225,182,59,.75); border-radius: 10px; color: var(--accent); font-size: 13px; font-weight: 800; }
+    .brand-copy p { margin: 0 0 2px; color: var(--accent); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    h1 { margin: 0; font-size: 23px; }
+    .topbar button {
+      background: rgba(225,182,59,.1); color: var(--text); border: 1px solid rgba(225,182,59,.38); padding: 0.65rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700;
+    }
+    .topbar button:hover { background: rgba(225,182,59,.2); }
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem;
+    }
+    .card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow);
+    }
+    .stats .card:nth-child(2) { border-top: 3px solid var(--good); }
+    .stats .card:nth-child(3) { border-top: 3px solid var(--danger); }
+    .label { color: var(--muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .value { color: var(--accent); font-size: 2rem; font-weight: 750; margin-top: 0.4rem; }
+    table {
+      width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border); padding: 0.8rem 0.9rem; text-align: left; vertical-align: top;
+    }
+    th { color: var(--muted); background: var(--panel-alt); font-size: .76rem; font-weight: 750; text-transform: uppercase; }
+    td { font-size: .88rem; }
+    tbody tr:hover { background: #292b21; }
+    .pill {
+      display: inline-block; border-radius: 999px; padding: 0.32rem 0.62rem; font-size: 0.73rem; font-weight: 750;
+    }
+    .status-active { background: #2b3822; color: var(--good); }
+    .status-banned { background: #48251f; color: #f08a70; }
+    .role-admin { color: var(--copper); font-weight: 700; }
+    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .ban-duration { display: flex; gap: 0.35rem; align-items: center; }
+    .ban-duration input, .ban-duration select { min-height: 34px; color: var(--text); background: var(--panel-alt); border: 1px solid var(--border); border-radius: 7px; padding: 0.35rem; }
+    .ban-duration input { width: 68px; }
+    button.action {
+      border: 1px solid var(--border); background: #292b22; color: var(--text); min-width: 112px; padding: 0.5rem 0.7rem; border-radius: 7px; cursor: pointer; font-weight: 650;
+    }
+    button.action:hover { border-color: var(--copper); background: #343025; }
+    button.action.primary { color: #241e10; background: var(--accent); border-color: var(--accent); }
+    button.action.primary:hover { color: #fff8ea; background: var(--accent-dark); border-color: var(--accent-dark); }
+    .danger { color: var(--danger); }
+    .analysis {
+      margin-top: 1rem; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow);
+    }
+    .analysis ul { margin: 0.6rem 0 0; padding-left: 1.2rem; color: var(--muted); }
+    .analysis li { margin-bottom: 0.4rem; }
+    .user-table-wrap { margin-top: 1rem; overflow-x: auto; }
+    @media (max-width: 760px) {
+      .wrap { padding-top: 14px; }
+      .user-table-wrap table { min-width: 930px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand-lockup">
+        <span class="brand-mark">FJ</span>
+        <div class="brand-copy"><p>Freedom Journey</p><h1>Admin dashboard</h1></div>
+      </div>
+      <button id="logoutBtn" type="button">Logout</button>
+    </div>
+
+    <div id="stats" class="stats"></div>
+
+    <div class="analysis">
+      <h2>Real-time site analysis</h2>
+      <ul id="analysisList"></ul>
+    </div>
+
+    <div class="card user-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const statsRoot = document.getElementById('stats');
+    const tableBody = document.getElementById('userTableBody');
+    const analysisList = document.getElementById('analysisList');
+    const banDrafts = new Map();
+
+    async function jsonFetch(url, options = {}) {
+      const res = await fetch(url, {
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    function renderStats(stats) {
+      const items = [
+        ['Total users', stats.totalUsers],
+        ['Active users', stats.activeUsers],
+        ['Banned users', stats.bannedUsers],
+        ['Admins', stats.admins],
+        ['Requests', stats.requests],
+        ['Active sessions', stats.activeSessions]
+      ];
+      statsRoot.innerHTML = items.map(([label, value]) => `
+        <div class="card">
+          <div class="label">${label}</div>
+          <div class="value">${value}</div>
+        </div>
+      `).join('');
+
+      const hits = Object.entries(stats.hitsByPath || {}).sort((a, b) => b[1] - a[1]);
+      analysisList.innerHTML = hits.length
+        ? hits.slice(0, 10).map(([path, count]) => `<li>${path} — ${count} requests</li>`).join('')
+        : '<li>No traffic recorded yet.</li>';
+    }
+
+    function renderUsers(users) {
+      tableBody.innerHTML = users.map(user => {
+        const draft = banDrafts.get(user.id) || { duration: '1', unit: 'day' };
+        return `
+        <tr>
+          <td><strong>${user.username}</strong></td>
+          <td>${user.email || '—'}</td>
+          <td><span class="${user.role === 'admin' ? 'role-admin' : ''}">${user.role}</span></td>
+          <td><span class="pill ${user.banned ? 'status-banned' : 'status-active'}">${user.banned ? (user.banExpiresAt ? 'Banned until ' + new Date(user.banExpiresAt).toLocaleString() : 'Banned permanently') : 'Active'}</span></td>
+          <td>${new Date(user.createdAt).toLocaleString()}</td>
+          <td>
+            <div class="actions">
+              <button class="action primary" type="button" data-action="toggle-ban" data-id="${user.id}">${user.banned ? 'Unban' : 'Ban'}</button>
+              ${user.banned ? '' : `
+                <label class="ban-duration">
+                  <input type="number" min="1" max="1000" value="${draft.duration}" data-ban-duration="${user.id}" aria-label="Ban duration">
+                  <select data-ban-unit="${user.id}" aria-label="Ban duration unit">
+                    <option value="minute" ${draft.unit === 'minute' ? 'selected' : ''}>Minutes</option>
+                    <option value="hour" ${draft.unit === 'hour' ? 'selected' : ''}>Hours</option>
+                    <option value="day" ${draft.unit === 'day' ? 'selected' : ''}>Days</option>
+                    <option value="month" ${draft.unit === 'month' ? 'selected' : ''}>Months</option>
+                    <option value="year" ${draft.unit === 'year' ? 'selected' : ''}>Years</option>
+                    <option value="permanent" ${draft.unit === 'permanent' ? 'selected' : ''}>Permanent</option>
+                  </select>
+                </label>
+              `}
+              <button class="action" type="button" data-action="reset-password" data-id="${user.id}">Reset password</button>
+              <button class="action" type="button" data-action="send-warning" data-id="${user.id}">Send warning</button>
+            </div>
+          </td>
+        </tr>
+      `;
+      }).join('');
+    }
+
+    function rememberBanDraft(id) {
+      const duration = document.querySelector('[data-ban-duration="' + id + '"]');
+      const unit = document.querySelector('[data-ban-unit="' + id + '"]');
+      if (duration && unit) banDrafts.set(id, { duration: duration.value, unit: unit.value });
+    }
+
+    async function loadStats() {
+      const data = await jsonFetch('/api/admin/stats');
+      renderStats(data.stats);
+    }
+
+    async function loadUsers() {
+      const data = await jsonFetch('/api/admin/users');
+      renderUsers(data.users || []);
+    }
+
+    async function loadDashboard() {
+      try {
+        const me = await jsonFetch('/api/auth/me');
+        if (me.user.role !== 'admin') {
+          window.location.href = '/login';
+          return;
+        }
+        await Promise.all([loadStats(), loadUsers()]);
+      } catch (err) {
+        window.location.href = '/login';
+      }
+    }
+
+    document.body.addEventListener('click', async function (event) {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+      const { action, id } = button.dataset;
+      if (action === 'toggle-ban') {
+        const userRow = (await jsonFetch('/api/admin/users')).users.find(u => u.id === id);
+        const banned = !(userRow && userRow.banned);
+        const duration = document.querySelector('[data-ban-duration="' + id + '"]');
+        const unit = document.querySelector('[data-ban-unit="' + id + '"]');
+        await jsonFetch('/api/admin/users/' + id + '/ban', {
+          method: 'PATCH',
+          body: JSON.stringify({
+            banned,
+            duration: duration ? Number(duration.value) : undefined,
+            unit: unit ? unit.value : 'permanent'
+          })
+        });
+      }
+      if (action === 'reset-password') {
+        const next = window.prompt('Enter new password for this user (minimum 6 chars):');
+        if (!next) return;
+        await jsonFetch('/api/admin/users/' + id + '/reset-password', {
+          method: 'PATCH',
+          body: JSON.stringify({ newPassword: next })
+        });
+      }
+      if (action === 'send-warning') {
+        const message = window.prompt('Enter a warning for this user (maximum 500 characters):');
+        if (!message || !message.trim()) return;
+        await jsonFetch('/api/admin/users/' + id + '/warnings', {
+          method: 'POST',
+          body: JSON.stringify({ message: message.trim() })
+        });
+      }
+      await loadStats();
+      await loadUsers();
+    });
+
+    document.body.addEventListener('input', function (event) {
+      const duration = event.target.closest('[data-ban-duration]');
+      if (duration) rememberBanDraft(duration.dataset.banDuration);
+    });
+
+    document.body.addEventListener('change', function (event) {
+      const unit = event.target.closest('[data-ban-unit]');
+      if (unit) rememberBanDraft(unit.dataset.banUnit);
+      const duration = event.target.closest('[data-ban-duration]');
+      if (duration) rememberBanDraft(duration.dataset.banDuration);
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.href = '/login';
+    });
+
+    loadDashboard();
+    setInterval(() => {
+      loadStats();
+      loadUsers();
+    }, 4000);
+  </script>
+</body>
+</html>

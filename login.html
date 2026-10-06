@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freedom Journey — Login</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1220;
+      --panel: #141d30;
+      --panel-2: #101a2b;
+      --accent: #7ea5ff;
+      --accent-2: #72e7c8;
+      --danger: #ff7e7e;
+      --text: #edf3ff;
+      --muted: #a8b3cc;
+      --border: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #162340, var(--bg) 50%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .shell {
+      width: min(92vw, 520px);
+      background: rgba(20, 29, 48, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    .top {
+      background: linear-gradient(135deg, rgba(126,165,255,0.15), rgba(114,231,200,0.1));
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+    }
+    .sub { margin: 0; color: var(--muted); line-height: 1.5; }
+    .card { padding: 1.5rem; }
+    .switcher {
+      display: flex; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .switcher button {
+      flex: 1; border: 1px solid var(--border); background: transparent; color: var(--text);
+      padding: 0.8rem 1rem; border-radius: 10px; cursor: pointer; font-weight: 700;
+    }
+    .switcher button.active {
+      background: rgba(126,165,255,0.18); border-color: rgba(126,165,255,0.5);
+    }
+    form { display: none; gap: 0.85rem; }
+    form.visible { display: flex; flex-direction: column; }
+    label { display: grid; gap: 0.4rem; font-weight: 700; color: var(--muted); }
+    input {
+      width: 100%; background: rgba(255,255,255,0.02); color: var(--text); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.9rem 1rem; font-size: 1rem;
+    }
+    button.primary {
+      width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #07111b; border: none; border-radius: 10px; padding: 0.9rem 1rem; font-weight: 800; cursor: pointer;
+    }
+    .info {
+      margin-top: 1rem; padding: 0.9rem 1rem; border-radius: 12px;
+      background: rgba(114,231,200,0.08); color: var(--text); border: 1px solid rgba(114,231,200,0.3);
+      line-height: 1.5;
+    }
+    .error { display: none; margin-top: 1rem; padding: 0.7rem 0.9rem; border-radius: 10px; color: #ffd9d9; background: rgba(255,126,126,0.1); border: 1px solid rgba(255,126,126,0.3); }
+    .error.show { display: block; }
+    .error.success { color: #d6fff0; background: rgba(114,231,200,0.1); border-color: rgba(114,231,200,0.3); }
+    .text-button { border: 0; padding: 0; background: none; color: var(--accent-2); text-align: left; cursor: pointer; }
+    .text-button:hover { text-decoration: underline; }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top">
+      <h1>Freedom Journey</h1>
+      <p class="sub">Sign in to continue to the streaming app. Every user must create an account first.</p>
+    </div>
+    <div class="card">
+      <div class="switcher">
+        <button id="showLogin" class="active" type="button">Login</button>
+        <button id="showSignup" type="button">Create account</button>
+      </div>
+
+      <form id="loginForm" class="visible">
+        <label>
+          Username
+          <input id="loginUser" name="username" type="text" placeholder="your username" required>
+        </label>
+        <label>
+          Password
+          <input id="loginPass" name="password" type="password" placeholder="your password" required>
+        </label>
+        <button class="primary" type="submit">Login</button>
+        <button id="forgotPasswordButton" class="text-button" type="button">Forgot password?</button>
+      </form>
+
+      <form id="resetRequestForm">
+        <label>
+          Account email
+          <input id="resetEmail" name="email" type="email" placeholder="name@example.com" autocomplete="email" required>
+        </label>
+        <button class="primary" type="submit">Email reset link</button>
+        <button class="text-button backToLogin" type="button">Back to login</button>
+      </form>
+
+      <form id="resetPasswordForm">
+        <label>
+          New password
+          <input id="newPassword" name="newPassword" type="password" minlength="6" autocomplete="new-password" required>
+        </label>
+        <label>
+          Confirm new password
+          <input id="confirmPassword" name="confirmPassword" type="password" minlength="6" autocomplete="new-password" required>
+        </label>
+        <button class="primary" type="submit">Set new password</button>
+      </form>
+
+      <form id="signupForm">
+        <label>
+          Username
+          <input id="signupUser" name="username" type="text" placeholder="choose a username" required>
+        </label>
+        <label>
+          Email
+          <input id="signupEmail" name="email" type="email" placeholder="name@example.com" autocomplete="email" required>
+        </label>
+        <label>
+          Password
+          <input id="signupPass" name="password" type="password" placeholder="minimum 6 characters" required>
+        </label>
+        <button class="primary" type="submit">Create account</button>
+      </form>
+
+      <div id="errorBox" class="error"></div>
+
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const resetRequestForm = document.getElementById('resetRequestForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    const errorBox = document.getElementById('errorBox');
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.remove('success');
+      errorBox.classList.add('show');
+    }
+
+    function showSuccess(message) {
+      errorBox.textContent = message;
+      errorBox.classList.add('success', 'show');
+    }
+
+    function hideError() {
+      errorBox.textContent = '';
+      errorBox.classList.remove('show', 'success');
+    }
+
+    function setTab(type) {
+      const isLogin = type === 'login';
+      const isSignup = type === 'signup';
+      loginForm.classList.toggle('visible', isLogin);
+      signupForm.classList.toggle('visible', isSignup);
+      resetRequestForm.classList.toggle('visible', type === 'forgot');
+      resetPasswordForm.classList.toggle('visible', type === 'reset');
+      document.getElementById('showLogin').classList.toggle('active', isLogin);
+      document.getElementById('showSignup').classList.toggle('active', isSignup);
+      hideError();
+    }
+
+    document.getElementById('showLogin').addEventListener('click', () => setTab('login'));
+    document.getElementById('showSignup').addEventListener('click', () => setTab('signup'));
+    document.getElementById('forgotPasswordButton').addEventListener('click', () => setTab('forgot'));
+    document.querySelectorAll('.backToLogin').forEach(button => button.addEventListener('click', () => setTab('login')));
+
+    async function jsonFetch(url, options) {
+      const res = await fetch(url, {
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    loginForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      hideError();
+      const username = document.getElementById('loginUser').value.trim();
+      const password = document.getElementById('loginPass').value;
+      try {
+        const data = await jsonFetch('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ username, password })
+        });
+        window.location.href = data.redirect || '/public/index.html';
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    signupForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      hideError();
+      const username = document.getElementById('signupUser').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPass').value;
+      try {
+        await jsonFetch('/api/auth/signup', {
+          method: 'POST',
+          body: JSON.stringify({ username, email, password })
+        });
+        setTab('login');
+        document.getElementById('loginUser').value = username;
+        showError('Account created successfully. Please log in.');
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    resetRequestForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      hideError();
+      try {
+        const data = await jsonFetch('/api/auth/password-reset/request', {
+          method: 'POST',
+          body: JSON.stringify({ email: document.getElementById('resetEmail').value.trim() })
+        });
+        showSuccess(data.message);
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    resetPasswordForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      hideError();
+      const newPassword = document.getElementById('newPassword').value;
+      if (newPassword !== document.getElementById('confirmPassword').value) {
+        showError('The passwords do not match.');
+        return;
+      }
+      try {
+        const data = await jsonFetch('/api/auth/password-reset/complete', {
+          method: 'POST',
+          body: JSON.stringify({
+            token: new URLSearchParams(location.search).get('token'),
+            newPassword
+          })
+        });
+        history.replaceState(null, '', '/login');
+        setTab('login');
+        showSuccess(data.message);
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    const resetToken = new URLSearchParams(location.search).get('token');
+    if (location.pathname === '/reset-password') {
+      if (resetToken) setTab('reset');
+      else {
+        setTab('forgot');
+        showError('This reset link is invalid. Request a new one.');
+      }
+    } else {
+      const banNotice = sessionStorage.getItem('streamvault_ban_notice');
+      if (banNotice) {
+        sessionStorage.removeItem('streamvault_ban_notice');
+        showError(banNotice);
+      }
+      fetch('/api/auth/me', { credentials: 'same-origin' })
+        .then(async res => {
+          if (!res.ok) return;
+          const data = await res.json();
+          const redirect = data.user && data.user.role === 'admin' ? '/admin' : '/public/index.html';
+          window.location.href = redirect;
+        })
+        .catch(() => {});
+    }
+  </script>
+</body>
+</html>
